@@ -1,6 +1,11 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <SDL2/SDL.h>
+
+extern SDL_Window* mainWindowPtr;
+extern SDL_Renderer* mainRendererPtr;
+
 /*
   a simple structure to hold game-related information
 */

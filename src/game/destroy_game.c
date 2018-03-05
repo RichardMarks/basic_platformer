@@ -10,6 +10,11 @@ void destroy_game() {
 
   /* do your game cleanup here */
 
+  SDL_DestroyRenderer(mainRendererPtr);
+  SDL_DestroyWindow(mainWindowPtr);
+
+  SDL_Quit();
+
   currentGamePtr = NULL;
 
 #ifndef PRODUCTION

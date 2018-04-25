@@ -69,7 +69,7 @@ Game::Game()
     newTime = static_cast<float>(SDL_GetTicks() * 0.001f);
     if (newTime - lastTime < 1) {
       deltaTime = (newTime - lastTime) * timeScale;
-      update(deltaTime);
+      update(60 * deltaTime);
     }
     lastTime = newTime;
 

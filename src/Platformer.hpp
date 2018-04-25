@@ -7,6 +7,10 @@
 
 class Platformer {
   public:
+    struct Physics {
+      static Vector2f gravity;
+      static Vector2f velocityLimit;
+    };
     Platformer(Game const& gameRef);
     ~Platformer();
     void load();
@@ -20,5 +24,10 @@ class Platformer {
 
     Entity player;
 };
+
+template <typename T>
+T clamp(T value, T minimum, T maximum) {
+  return value < minimum ? minimum : (value > maximum ? maximum : value);
+}
 
 #endif // !PLATFORMER_H

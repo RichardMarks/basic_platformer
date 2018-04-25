@@ -1,5 +1,8 @@
 #include "Platformer.hpp"
 
+Vector2f Platformer::Physics::gravity(0.0f, 9.8f);
+Vector2f Platformer::Physics::velocityLimit(22.0f, 6.0f);
+
 Platformer::Platformer(Game const& gameRef)
   : game(gameRef) {
 
@@ -20,7 +23,7 @@ void Platformer::unload() {
 void Platformer::create() {
   player.size = Vector2u(32, 32);
   player.origin = Vector2f(player.size.x * 0.5f, player.size.y * 0.5f);
-  player.position = Vector2f(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+  player.position = Vector2f(SCREEN_WIDTH / 2, 0);
   player.velocity = Vector2f(0, 0);
 
   // ground.size = Vector2u(SCREEN_WIDTH, 16);
@@ -33,6 +36,19 @@ void Platformer::destroy() {
 
 void Platformer::update(float deltaTime) {
   Game::Input const& input = game.input;
+
+  // apply gravity to Y axis velocity
+  player.velocity.y += Platformer::Physics::gravity.y;
+
+  // keep velocity from getting out of hand
+  player.velocity.y = clamp<float>(
+    player.velocity.y,
+    -Platformer::Physics::velocityLimit.y,
+    Platformer::Physics::velocityLimit.y
+  );
+
+  // move player by velocity scaled by deltaTime for frame-rate independence
+  player.position.y += player.velocity.y * deltaTime;
 }
 
 void Platformer::render() {

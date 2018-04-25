@@ -1,28 +1,46 @@
-CC ?= gcc
-CFLAGS ?= $(shell sdl2-config --cflags)
-LDFLAGS ?= $(shell sdl2-config --libs)
 
-TARGET_EXEC ?= my-project
-BUILD_DIR ?= ./bin
-SRC_DIRS ?= ./src
-SRCS := $(shell find $(SRC_DIRS) -name *.c)
-OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
-DEPS := $(OBJS:.o=.d)
-INC_DIRS := $(shell find $(SRC_DIRS) -type d)
-INC_FLAGS := $(addprefix -I,$(INC_DIRS))
-CPPFLAGS ?= $(INC_FLAGS) -MMD -MP
+TARGET_EXEC ?= game
+TARGET_DIR ?= ./bin
+BUILD_DIR ?= ./build
+SOURCE_DIRS ?= ./src
+RESOURCES_DIR ?= ./resources
 
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+LIBRARY_COMPILER_FLAGS ?= $(shell pkg-config sdl2 --cflags)
+LIBRARY_LINKER_FLAGS ?= $(shell pkg-config sdl2 --libs)
 
-$(BUILD_DIR)/%.c.o: %.c
-	$(MKDIR_P) $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+# production
+# PREPROC_DEFINES ?= -DNDEBUG
+# dev
+PREPROC_DEFINES ?= -DDEBUG
+
+COPY_RESOURCES ?= rsync -rvui --progress
+MKDIR_P ?= mkdir -p
+COMPILER ?= clang++
+
+SOURCES := $(shell find $(SOURCE_DIRS) -name *.cpp)
+INCLUDE_DIRS := $(shell find $(SOURCE_DIRS) -type d)
+
+OBJECTS := $(SOURCES:%=$(BUILD_DIR)/%.o)
+DEPENDENCIES := $(OBJECTS:.o=.d)
+
+INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
+CPPFLAGS ?= $(INCLUDE_FLAGS) $(PREPROC_DEFINES) -MMD -MP -g -std=c++11
+CFLAGS ?= $(LIBRARY_COMPILER_FLAGS) -O0
+LDFLAGS ?= $(LIBRARY_LINKER_FLAGS) -Wl,-headerpad_max_install_names
 
 .PHONY: clean
 
+$(TARGET_DIR)/$(TARGET_EXEC): $(OBJECTS)
+	$(MKDIR_P) $(TARGET_DIR)
+	$(COMPILER) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(COPY_RESOURCES) $(RESOURCES_DIR) $(TARGET_DIR)/
+
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	$(MKDIR_P) $(dir $@)
+	$(COMPILER) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
 clean:
 	$(RM) -r $(BUILD_DIR)
+	$(RM) -r $(TARGET_DIR)
 
--include $(DEPS)
-MKDIR_P ?= mkdir -p
+-include $(DEPENDENCIES)

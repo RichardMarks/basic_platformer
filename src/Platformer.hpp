@@ -20,9 +20,13 @@ class Platformer {
     void update(float deltaTime);
     void render();
 
+    void renderEntity(Entity& entity, unsigned red, unsigned green, unsigned blue, unsigned alpha);
+    void renderEntityDebug(Entity& entity);
+
     Game const& game;
 
     Entity player;
+    Entity ground;
 };
 
 template <typename T>

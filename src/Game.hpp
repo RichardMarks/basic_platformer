@@ -1,4 +1,5 @@
 #ifndef GAME_H
+#define GAME_H
 
 #include <iostream>
 #include <stdexcept>
@@ -14,20 +15,21 @@
 #define SCREEN_HEIGHT 1080 / 2
 #define WINDOW_TITLE "Basic Platformer"
 
+class Platformer;
 class Game {
-  struct Input {
-    bool up;
-    bool down;
-    bool left;
-    bool right;
-    bool jump;
-
-    int mouseX;
-    int mouseY;
-    bool mouseDown;
-  };
-
   public:
+    struct Input {
+      bool up;
+      bool down;
+      bool left;
+      bool right;
+      bool jump;
+
+      int mouseX;
+      int mouseY;
+      bool mouseDown;
+    };
+
     Game();
     ~Game();
     void load();
@@ -43,6 +45,8 @@ class Game {
     float timeScale;
     bool isRunning;
     bool isPaused;
+
+    Platformer* platformer;
 };
 
 #endif // !GAME_H

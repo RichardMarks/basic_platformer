@@ -1,4 +1,4 @@
-
+#include "Platformer.hpp"
 #include "Game.hpp"
 
 Game::Game()
@@ -39,6 +39,8 @@ Game::Game()
 
   SDL_RenderSetLogicalSize(mainRendererPtr, SCREEN_WIDTH, SCREEN_HEIGHT);
   SDL_MaximizeWindow(mainWindowPtr);
+
+  platformer = new Platformer(*this);
 
   load();
   create();
@@ -140,6 +142,8 @@ Game::Game()
 Game::~Game() {
   destroy();
   unload();
+  delete platformer;
+  platformer = nullptr;
   SDL_DestroyRenderer(mainRendererPtr);
   SDL_DestroyWindow(mainWindowPtr);
   SDL_Quit();
@@ -147,29 +151,36 @@ Game::~Game() {
 
 void Game::load() {
   // load resources
+  platformer->load();
 }
 
 void Game::unload() {
   // free resources
+  platformer->unload();
 }
 
 void Game::create() {
   // allocate objects
+  platformer->create();
 }
 
 void Game::destroy() {
   // free objects
+  platformer->destroy();
 }
 
 void Game::update(float deltaTime) {
   // update objects
+  platformer->update(deltaTime);
 }
 
 void Game::render() {
-  SDL_SetRenderDrawColor(mainRendererPtr, 0x30, 0x60, 0x90, 0xFF);
+  // SDL_SetRenderDrawColor(mainRendererPtr, 0x30, 0x60, 0x90, 0xFF);
+  SDL_SetRenderDrawColor(mainRendererPtr, 0x00, 0x00, 0x00, 0xFF);
   SDL_RenderClear(mainRendererPtr);
 
   // draw objects
+  platformer->render();
 
   SDL_RenderPresent(mainRendererPtr);
 }
